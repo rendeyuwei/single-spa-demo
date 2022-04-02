@@ -2,6 +2,7 @@ import { routingEventsListeningTo } from "./navigation/navigation-events.js";
 
 let hasInitialized = false;
 
+// jQuery.fn an alias of jQuery.prototype
 export function ensureJQuerySupport(jQuery = window.jQuery) {
   if (!jQuery) {
     if (window.$ && window.$.fn && window.$.fn.jquery) {

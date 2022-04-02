@@ -8,7 +8,7 @@ Vue.config.productionTip = false
 const appOptions = {
   router,
   render: h => h(App),
-  el: '#micro3' // 挂载到父应用的标签中
+  el: '#microApp' // 挂载到父应用的标签中
 }
 
 const vueLifecycle =  singleSpaVue({

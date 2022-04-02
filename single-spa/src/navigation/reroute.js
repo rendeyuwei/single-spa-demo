@@ -45,6 +45,7 @@ export function reroute(pendingPromises = [], eventArguments) {
     });
   }
 
+  // 获取到4种类别app的数组
   const {
     appsToUnload,
     appsToUnmount,
@@ -56,8 +57,10 @@ export function reroute(pendingPromises = [], eventArguments) {
     oldUrl = currentUrl,
     newUrl = (currentUrl = window.location.href);
 
+  // app是否start
   if (isStarted()) {
     appChangeUnderway = true;
+    // 将所有应用拼接起来
     appsThatChanged = appsToUnload.concat(
       appsToLoad,
       appsToUnmount,
@@ -78,6 +81,7 @@ export function reroute(pendingPromises = [], eventArguments) {
       const loadPromises = appsToLoad.map(toLoadPromise);
 
       return (
+        // 保证所有加载子应用的微任务执行完成
         Promise.all(loadPromises)
           .then(callAllEventListeners)
           // there are no mounted apps, before start() is called, so we always return []
@@ -93,6 +97,7 @@ export function reroute(pendingPromises = [], eventArguments) {
   function performAppChanges() {
     return Promise.resolve().then(() => {
       // https://github.com/single-spa/single-spa/issues/545
+      // 分配event
       window.dispatchEvent(
         new CustomEvent(
           appsThatChanged.length === 0
@@ -121,6 +126,8 @@ export function reroute(pendingPromises = [], eventArguments) {
         return;
       }
 
+      // 移除应用 => 更改应用状态，执行unload生命周期函数，执行一些清理动作
+      // 其实一般情况下这里没有真的移除应用
       const unloadPromises = appsToUnload.map(toUnloadPromise);
 
       const unmountUnloadPromises = appsToUnmount
@@ -131,6 +138,7 @@ export function reroute(pendingPromises = [], eventArguments) {
 
       const unmountAllPromise = Promise.all(allUnmountPromises);
 
+      // 卸载全部完成触发的事件
       unmountAllPromise.then(() => {
         window.dispatchEvent(
           new CustomEvent(
@@ -142,6 +150,9 @@ export function reroute(pendingPromises = [], eventArguments) {
 
       /* We load and bootstrap apps while other apps are unmounting, but we
        * wait to mount the app until all apps are finishing unmounting
+       * 这个原因其实是因为这些操作都是通过注册不同的微任务实现的，而JS是单线程执行，
+       * 所以自然后续的只能等待前面的执行完了才能执行
+       * 这里一般情况下其实不会执行，只有手动执行了unloadApplication方法才会二次加载
        */
       const loadThenMountPromises = appsToLoad.map((app) => {
         return toLoadPromise(app).then((app) =>
@@ -152,6 +163,8 @@ export function reroute(pendingPromises = [], eventArguments) {
       /* These are the apps that are already bootstrapped and just need
        * to be mounted. They each wait for all unmounting apps to finish up
        * before they mount.
+       * 初始化和挂载app，其实做的事情很简单，就是改变app.status，执行生命周期函数
+       * 当然这里的初始化和挂载其实是前后脚一起完成的(只要中间用户没有切换路由)
        */
       const mountPromises = appsToMount
         .filter((appToMount) => appsToLoad.indexOf(appToMount) < 0)
@@ -238,6 +251,7 @@ export function reroute(pendingPromises = [], eventArguments) {
     callCapturedEventListeners(eventArguments);
   }
 
+  // 为自定义event添加可以传递的detail
   function getCustomEventDetail(isBeforeChanges = false, extraProperties) {
     const newAppStatuses = {};
     const appsByNewStatus = {

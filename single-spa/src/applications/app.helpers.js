@@ -18,6 +18,7 @@ export function isActive(app) {
   return app.status === MOUNTED;
 }
 
+// 返回boolean值，判断app的path是否合理，即应用是否应该被激活
 export function shouldBeActive(app) {
   try {
     return app.activeWhen(window.location);

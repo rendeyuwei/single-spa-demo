@@ -12,6 +12,13 @@ export function validLifecycleFn(fn) {
   }
 }
 
+/**
+ * 返回一个接受props作为参数的函数，这个函数负责执行子应用中的生命周期函数，
+ * 并确保生命周期函数返回的结果为promise
+ * @param {*} appOrParcel 子应用打包后的对象
+ * @param {*} lifecycle 生命周期名称
+ * @returns 
+ */
 export function flattenFnArray(appOrParcel, lifecycle) {
   let fns = appOrParcel[lifecycle] || [];
   fns = Array.isArray(fns) ? fns : [fns];

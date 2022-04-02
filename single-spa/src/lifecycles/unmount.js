@@ -7,6 +7,12 @@ import {
 import { handleAppError, transformErr } from "../applications/app-errors.js";
 import { reasonableTime } from "../applications/timeouts.js";
 
+/**
+ * 执行了状态上的更改
+ * 执行unmount生命周期函数
+ * @param {*} appOrParcel => app
+ * @param {*} hardFail => 索引
+ */
 export function toUnmountPromise(appOrParcel, hardFail) {
   return Promise.resolve().then(() => {
     if (appOrParcel.status !== MOUNTED) {

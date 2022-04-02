@@ -25,6 +25,7 @@ import { assign } from "../utils/assign";
 
 const apps = [];
 
+// 将应用分为4类，根据app.status，将不同类别放入不同数组
 export function getAppChanges() {
   const appsToUnload = [],
     appsToUnmount = [],
@@ -35,15 +36,18 @@ export function getAppChanges() {
   const currentTime = new Date().getTime();
 
   apps.forEach((app) => {
+    // boolean值，判断app的path是否合理，即应用是否应该被激活
     const appShouldBeActive =
       app.status !== SKIP_BECAUSE_BROKEN && shouldBeActive(app);
 
     switch (app.status) {
+      // LOAD_ERROR状态，如果appShouldBeActive且时间大于等于200ms，放入appsToLoad中
       case LOAD_ERROR:
         if (appShouldBeActive && currentTime - app.loadErrorTime >= 200) {
           appsToLoad.push(app);
         }
         break;
+      // NOT_LOADED状态，do nothing，一开始app就为该状态
       case NOT_LOADED:
       case LOADING_SOURCE_CODE:
         if (appShouldBeActive) {
@@ -101,6 +105,7 @@ export function registerApplication(
     customProps
   );
 
+  // 判断app name是否有重复
   if (getAppNames().indexOf(registration.name) !== -1)
     throw Error(
       formatErrorMessage(
@@ -111,10 +116,13 @@ export function registerApplication(
       )
     );
 
+  // 将注册的该应用添加到apps数组中
   apps.push(
+    // 将registration的参数移到第一个对象上
     assign(
       {
         loadErrorTime: null,
+        // important应用的状态
         status: NOT_LOADED,
         parcels: {},
         devtools: {
@@ -129,6 +137,7 @@ export function registerApplication(
   );
 
   if (isInBrowser) {
+    // https://zh-hans.single-spa.js.org/docs/api/#ensurejquerysupport 为single spa支持jQuery
     ensureJQuerySupport();
     reroute();
   }
@@ -411,6 +420,7 @@ function sanitizeArguments(
 }
 
 function sanitizeLoadApp(loadApp) {
+  // 注意这里把loadApp转成了function
   if (typeof loadApp !== "function") {
     return () => Promise.resolve(loadApp);
   }
@@ -424,6 +434,7 @@ function sanitizeCustomProps(customProps) {
 
 function sanitizeActiveWhen(activeWhen) {
   let activeWhenArray = Array.isArray(activeWhen) ? activeWhen : [activeWhen];
+  // 对activeWhen数组进行遍历，如果该项不是function，则通过pathToActiveWhen()方法将指定path转化为一个返回boolean的function，来判断该path是否正确
   activeWhenArray = activeWhenArray.map((activeWhenOrPath) =>
     typeof activeWhenOrPath === "function"
       ? activeWhenOrPath

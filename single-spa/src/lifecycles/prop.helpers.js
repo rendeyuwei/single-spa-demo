@@ -4,6 +4,16 @@ import { assign } from "../utils/assign.js";
 import { isParcel, toName } from "../applications/app.helpers.js";
 import { formatErrorMessage } from "../applications/app-errors.js";
 
+/**
+ * 得到传递给子应用的props
+ * @param {*} appOrParcel 
+ * @returns {
+ *    ...customProps,
+ *    name,
+ *    mountParcel: mountParcel.bind(appOrParcel),
+ *    singleSpa, 
+ * }
+ */
 export function getProps(appOrParcel) {
   const name = toName(appOrParcel);
   let customProps =
