@@ -1,34 +1,39 @@
 <template>
-  <div>
-    <h1>{{ msg }}</h1>
-    <p>
-      <i class="el-icon-s-promotion" />
-      vue version: {{ vueVersion }}, element-ui version: {{ elementVersion }}
-    </p>
-  </div>
+    <div>
+        <h1>{{ msg }}</h1>
+
+        <i class="el-icon-s-promotion" />
+        <p class="app-lib">
+            vue version: {{ vueVersion }}, element-ui version:
+            {{ elementVersion }}, i'm purple!
+        </p>
+    </div>
 </template>
 
 <script>
-	import ElementUI from 'element-ui';
-	import Vue from 'vue';
+import ElementUI from "element-ui";
+import Vue from "vue";
 
-	export default {
-		name: 'HelloWorld',
-		props: {
-			msg: String,
-		},
-		data() {
-			return {
-				vueVersion: Vue.version,
-				elementVersion: ElementUI.version,
-			};
-		},
-	};
+export default {
+    name: "HelloWorld",
+    props: {
+        msg: String,
+    },
+    data() {
+        return {
+            vueVersion: Vue.version,
+            elementVersion: ElementUI.version,
+        };
+    },
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-  h1 {
+<style>
+h1 {
     color: #64b587;
-  }
+}
+.app-lib {
+    color: purple;
+}
 </style>

@@ -92,7 +92,7 @@ function urlReroute() {
 }
 
 /**
- * 通过装饰器模式，增强pushstate和replacestate方法，除了原生的操作历史记录，还会调用reroute
+ * 手动调用popstate事件
  * @param {*} updateState window.history.pushstate/replacestate
  * @param {*} methodName 'pushstate' or 'replacestate'
  */
@@ -122,6 +122,7 @@ function patchedUpdateState(updateState, methodName) {
   };
 }
 
+// 这里就是新创建一个popstate事件，添加了相关属性，然后在上面的方法中dispatch
 function createPopStateEvent(state, originalMethodName) {
   // https://github.com/single-spa/single-spa/issues/224 and https://github.com/single-spa/single-spa-angular/issues/49
   // We need a popstate event even though the browser doesn't do one by default when you call replaceState, so that
@@ -143,7 +144,7 @@ function createPopStateEvent(state, originalMethodName) {
 
 if (isInBrowser) {
   // We will trigger an app change for any routing events.
-  // hashchange，popstate分别对应hash，history两种模式下路由改变的触发事件
+  // hashchange，popstate分别对应hash，history两种模式下路由改变的触发事件，为两种事件添加urlRerouteOnly方法
   window.addEventListener("hashchange", urlReroute);
   window.addEventListener("popstate", urlReroute);
 

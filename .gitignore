@@ -1,2 +1,7 @@
 /node_modules
 reactApp
+main/node_modules
+main/dist
+app1/node_modules
+mainApp
+/.vscode

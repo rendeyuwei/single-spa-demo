@@ -15,6 +15,7 @@ export function start(opts) {
   if (opts && opts.urlRerouteOnly) {
     setUrlRerouteOnly(opts.urlRerouteOnly);
   }
+  // start之后要手动调用一次reroute，比如存在初始在某个子应用路由，然后刷新页面的情况
   if (isInBrowser) {
     reroute();
   }

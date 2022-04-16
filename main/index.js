@@ -1,9 +1,20 @@
-import Vue from 'vue'
-import App from './App.vue'
-import router from './router'
-import { registerApplication, start } from 'single-spa'
+import { registerApplication, start } from 'single-spa';
+import './index.less';
 
-Vue.config.productionTip = false
+// for angular subapp
+// import 'zone.js';
+
+/**
+ * 主应用 **可以使用任意技术栈**
+ * 以下分别是 React 和 Vue 的示例，可切换尝试
+ */
+// import render from './render/ReactRender';
+import render from './render/VueRender'
+
+/**
+ * Step1 初始化应用（可选）
+ */
+render();
 
 // 远程加载子应用
 function createScript(url) {
@@ -18,11 +29,15 @@ function createScript(url) {
 }
 
 // 记载函数，返回一个 promise
-function loadApp(url, globalVar) {
+function loadApp(url, globalVar, project) {
   // 支持远程加载子应用
   return async () => {
-    await createScript(url + '/js/chunk-vendors.js')
-    await createScript(url + '/js/app.js')
+    if (project === 'vue') {
+      await createScript(url + '/js/chunk-vendors.js')
+      await createScript(url + '/js/app.js')
+    } else if (project === 'react') {
+      await createScript(url + `/${globalVar}.js`)
+    }
     // 这里的return很重要，需要从这个全局对象中拿到子应用暴露出来的生命周期函数
     return window[globalVar]
   }
@@ -34,18 +49,18 @@ const apps = [
     // 子应用名称
     name: 'app2',
     // 子应用加载函数，是一个promise
-    app: loadApp('http://localhost:8082', 'app2'),
+    app: loadApp('http://localhost:8082', 'app2', 'vue'),
     // 当路由满足条件时（返回true），激活（挂载）子应用
     activeWhen: location => location.pathname.startsWith('/app2'),
     // 传递给子应用的对象
     customProps: {}
   },
-  // {
-  //   name: 'app3',
-  //   app: loadApp('http://localhost:8083', 'app3'),
-  //   activeWhen: location => location.pathname.startsWith('/app3'),
-  //   customProps: {}
-  // },
+  {
+    name: 'app1',
+    app: System.import('@org-name/app1'),
+    activeWhen: location => location.pathname.startsWith('/react16'),
+    customProps: {}
+  },
 ]
 
 // 注册子应用
@@ -55,7 +70,5 @@ for (let i = apps.length - 1; i >= 0; i--) {
 
 start()
 
-new Vue({
-  router,
-  render: h => h(App)
-}).$mount('#app')
+// new Vue({
+// }).$mount('#app')

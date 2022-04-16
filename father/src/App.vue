@@ -11,7 +11,7 @@
 
       <!-- 侧边栏 -->
       <ul class="mainapp-sidemenu">
-        <li><router-link to="/app2">打开app2</router-link></li>
+        <li><router-link to="/app2">打开vue</router-link></li>
         <li><router-link to="/app3">打开app3</router-link></li>
       </ul>
       
